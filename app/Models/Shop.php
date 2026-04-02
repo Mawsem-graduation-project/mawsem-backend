@@ -8,6 +8,15 @@ class Shop extends Model
 {
     //
 
+    protected $fillable = [
+        'name',
+        'city',
+        'address',
+    ];
+
+    public function isActive(){
+        return $this->is_active;
+    }
     public function users()
     {
         return $this->hasMany(User::class);
