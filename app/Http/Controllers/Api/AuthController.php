@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Shop;
 use App\Models\User;
 use Illuminate\Http\Request;
+use function Pest\Laravel\withCookie;
 
 class AuthController extends Controller
 {
@@ -40,10 +41,7 @@ class AuthController extends Controller
         ]);
         $accessToken = $user->createToken('authToken')->plainTextToken;
 
-        return response()->json([
-            'user' => $user,
-            'token' => $accessToken
-        ],201);
+        return response()->json(['user' => auth()->user()->load('shop')])->withCookie(cookie('accessToken', $accessToken, 60 * 24, '/', null, true, true));
     }
 
     public function login(Request $request){
@@ -58,10 +56,7 @@ class AuthController extends Controller
 
         $accessToken = auth()->user()->createToken('authToken')->plainTextToken;
 
-        return response()->json([
-            'user' => auth()->user(),
-            'token' => $accessToken
-        ],200);
+        return response()->json(['user' => auth()->user()->load('shop')])->withCookie(cookie('accessToken', $accessToken, 60 * 24, '/', null, true, true));
     }
 
     public function logout(){
