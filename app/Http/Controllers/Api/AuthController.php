@@ -41,7 +41,8 @@ class AuthController extends Controller
         ]);
         $accessToken = $user->createToken('authToken')->plainTextToken;
 
-        return response()->json(['user' => auth()->user()->load('shop')])->withCookie(cookie('accessToken', $accessToken, 60 * 24, '/', null, true, true));
+        return response()->json(['user' => auth()->user()->load('shop')])
+            ->withCookie(cookie('accessToken', $accessToken, 60 * 24, '/', '.eny.sa', true, true));
     }
 
     public function login(Request $request){
@@ -56,11 +57,19 @@ class AuthController extends Controller
 
         $accessToken = auth()->user()->createToken('authToken')->plainTextToken;
 
-        return response()->json(['user' => auth()->user()->load('shop')])->withCookie(cookie('accessToken', $accessToken, 60 * 24, '/', null, true, true));
+        return response()->json(['user' => auth()->user()->load('shop')])
+            ->withCookie(cookie('accessToken', $accessToken, 60 * 24, '/', '.eny.sa', true, true));
     }
 
     public function logout(){
-        auth()->logout();
-        return response()->json(['message' => 'Successfully logged out'],200);
+
+        if(auth()->check()){
+            auth()->user()->tokens()->delete();
+        }
+
+        $cookie = cookie()->forget('accessToken');
+
+        return response()->json(['message' => 'Successfully logged out'])
+            ->withCookie($cookie);
     }
 }
