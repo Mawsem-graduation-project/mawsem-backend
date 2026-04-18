@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Sale extends Model
 {
     //
-    public function products(){
+    public function product(){
         return $this->belongsTo(Product::class);
     }
     public function shop(){

@@ -12,9 +12,9 @@ class Product extends Model
         return $this->belongsTo(Category::class);
     }
 
-    public function inventory()
+    public function inventories()
     {
-        return $this->hasOne(Inventory::class);
+        return $this->hasMany(Inventory::class);
     }
 
     public function sales(){

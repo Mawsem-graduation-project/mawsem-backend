@@ -15,6 +15,13 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         //
+        $middleware->prependToGroup('api',\App\Http\Middleware\AuthFromCookie::class);
+
+        $middleware->statefulApi();
+        $middleware->encryptCookies(except: [
+            'accessToken',
+        ]);
+
         $middleware->alias([
             'IsShopOwner' => IsShopOwner::class,
             'HasActiveShop' => HasActiveShop::class,
