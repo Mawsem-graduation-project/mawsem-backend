@@ -42,7 +42,7 @@ class AuthController extends Controller
         $accessToken = $user->createToken('authToken')->plainTextToken;
 
         return response()->json(['user' => auth()->user()->load('shop')])
-            ->withCookie(cookie('accessToken', $accessToken, 60 * 24, '/', '.eny.sa', true, true));
+            ->withCookie(cookie('accessToken', $accessToken, 60 * 24, '/', null, false, true));
     }
 
     public function login(Request $request){
@@ -58,7 +58,7 @@ class AuthController extends Controller
         $accessToken = auth()->user()->createToken('authToken')->plainTextToken;
 
         return response()->json(['user' => auth()->user()->load('shop')])
-            ->withCookie(cookie('accessToken', $accessToken, 60 * 24, '/', '.eny.sa', true, true));
+            ->withCookie(cookie('accessToken', $accessToken, 60 * 24, '/', null, false, true));
     }
 
     public function logout(){

@@ -18,7 +18,7 @@ class SaleSeeder extends Seeder
     {
         //
         $shop = Shop::first();
-        $products = Product::all();
+        $products = Product::where('shop_id', $shop->id)->get();
 
         $startDate = Carbon::now()->subYears(2);
         $endDate = Carbon::now();

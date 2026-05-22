@@ -22,10 +22,9 @@ class Shop extends Model
         return $this->hasMany(User::class);
     }
 
-    public function inventories(){
-        return $this->hasMany(Inventory::class);
+    public function products(){
+        return $this->hasMany(Product::class);
     }
-
     public function sales(){
         return $this->hasMany(Sale::class);
     }

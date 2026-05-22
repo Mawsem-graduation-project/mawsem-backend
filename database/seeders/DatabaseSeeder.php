@@ -3,9 +3,11 @@
 namespace Database\Seeders;
 
 use App\Models\Inventory;
+use App\Models\Shop;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,17 +18,21 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $shop = Shop::firstOrCreate(
+            ['name' => 'متاجر السعودية'],
+            ['city' => 'مكة المكرمة']
+        );
+
         $this->call([
-           CategorySeeder::class,
            ProductSeeder::class,
-           InventorySeeder::class,
            SaleSeeder::class,
         ]);
 
         User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            'name' => 'مالك',
+            'email' => 'mtjr@example.com',
+            'password' => Hash::make('123'),
+            'shop_id' => $shop->id,
         ]);
     }
 }

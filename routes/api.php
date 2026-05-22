@@ -12,13 +12,15 @@ Route::post('login', [AuthController::class, 'login']);
 
 Route::middleware(['auth:sanctum','HasActiveShop'])->group(function () {
 
+    // Logout
     Route::post('logout', [AuthController::class, 'logout']);
 
     // CSV, Excel
     Route::get('export-sales',[ExcelController::class, 'exportSalesToCSV']);
+    Route::post('import-sales',[ExcelController::class, 'importSales']);
 
     // Products
-    Route::get('products', [ProductController::class, 'index']);
+    Route::resource('products', ProductController::class);
 
     // Inventory
     Route::get('inventory',[InventoryController::class, 'index']);
