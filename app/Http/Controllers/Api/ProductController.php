@@ -62,7 +62,7 @@ class ProductController extends Controller
     public function update(Request $request, Product $product)
     {
 
-        if ($product->shop_id !== auth()->user()->shop->shop_id) {
+        if ($product->shop_id !== auth()->user()->shop_id) {
             return response()->json([
                 'message' => 'You are not allowed to update this product',
             ], 403);
@@ -90,7 +90,7 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
 
-        if ($product->shop_id !== auth()->user()->shop->shop_id) {
+        if ($product->shop_id !== auth()->user()->shop_id) {
             return response()->json([
                 'message' => 'You are not allowed to delete this product',
             ], 403);
