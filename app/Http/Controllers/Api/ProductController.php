@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
+use App\Models\Sale;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class ProductController extends Controller
 {
@@ -53,8 +56,17 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        //
+        $shop = auth()->user()->shop;
+
+        if ($product->shop_id != $shop->id){
+            return response(['message'=>"You can't access this product"],404);
+        }
+
+        return response()->json([
+            'product' => new ProductResource($product),
+        ]);
     }
+
 
     /**
      * Update the specified resource in storage.
