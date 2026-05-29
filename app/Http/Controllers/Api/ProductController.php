@@ -67,6 +67,72 @@ class ProductController extends Controller
         ]);
     }
 
+    public function forecast(Product $product)
+    {
+        set_time_limit(0);
+
+        $shop = auth()->user()->shop;
+        if (!$shop || $product->shop_id != $shop->id){
+            return response(['message' => 'Shop not found'], 404);
+        }
+
+        // 1. جلب المبيعات وبناء الـ CSV كالمعتاد
+        $salesData = Sale::where('shop_id', $shop->id)
+            ->whereHas('product', function($q) use ($product) {
+                $q->where('products.sku', $product->sku);
+            })
+            ->with('product:id,sku')
+            ->orderBy('sale_date', 'asc')
+            ->get();
+
+        // نتحقق من وجود سجلات كافية في قاعدة البيانات (354 يوماً هجرياً)
+        if ($salesData->count() < 354) {
+            return response()->json(['status' => 'error', 'message' => 'البيانات التاريخية غير كافية، يجب توفر مبيعات 354 يوماً على الأقل.'], 400);
+        }
+
+        $csvHeader = "sale_date,product_sku,quantity\n";
+        $csvRows = "";
+        foreach ($salesData as $sale) {
+            $productSku = $sale->product ? $sale->product->sku : $product->sku;
+            $csvRows .= "{$sale->sale_date},{$productSku},{$sale->quantity}\n";
+        }
+
+        try {
+            $csvContent = $csvHeader . $csvRows;
+
+            // 2. إرسال الطلب إلى بايثون كـ Multipart File بدلاً من حقل نصي عادية
+            $response = Http::timeout(120)
+                ->attach('file', $csvContent, 'sales_data.csv') // إرسال الملف في الذاكرة باسم 'file'
+                ->post('http://127.0.0.1:8001/forecast', [
+                    'predictionTime' => 360 // المتغيرات الأخرى ترسل كـ Form Data
+                ]);
+
+            if ($response->successful()) {
+                $apiResult = $response->json();
+
+                // 3. جلب مصفوفة الشهور الجاهزة من بايثون والمقسمة هجرياً بأم القرى
+                $forecast = $apiResult['months'] ?? [];
+
+                return response()->json([
+                    'product'  => new ProductResource($product),
+                    'forecast' => $forecast
+                ]);
+            }
+
+            // في حال فشل بايثون، نطبع الرد الفعلي في السجلات لتسهيل تتبع الأخطاء
+            Log::error('FastAPI Error: ' . $response->body());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'AI failure',
+                'details' => $response->json() // يظهر لك تفاصيل الخطأ القادم من بايثون مباشرة في الـ Postman
+            ], 400);
+
+        } catch (\Exception $e) {
+            Log::critical('FastAPI Connection Failed: ' . $e->getMessage());
+            return response()->json(['status' => 'error', 'message' => 'Server error: ' . $e->getMessage()], 500);
+        }
+    }
+
 
     /**
      * Update the specified resource in storage.

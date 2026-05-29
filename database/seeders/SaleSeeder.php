@@ -43,19 +43,35 @@ class SaleSeeder extends Seeder
         }
     }
 
-    private function generateQuantity($product,$date)
+    private function generateQuantity($product, $date)
     {
-        $baseQuantity = rand(5,10);
+        $baseQuantity = rand(5, 10);
 
-        if($date->isWeekend()){
-            $baseQuantity += rand(5,12);
+        if ($date->isWeekend()) {
+            $baseQuantity += rand(5, 12);
         }
 
-        if(str_contains($product->name,'فيمتو شراب التوت 710 مل')){
-            if(in_array($date->month,[3,4])){
-                return rand(40,100);
+        if (str_contains($product->name, 'فيمتو شراب التوت 710 مل')) {
+
+            $isVimtoSeason = false;
+
+            if ($date->year == 2024 && $date->between('2024-03-01', '2024-04-09')) {
+                $isVimtoSeason = true;
             }
-            return rand(0,3);
+
+            if ($date->year == 2025 && $date->between('2025-02-15', '2025-03-29')) {
+                $isVimtoSeason = true;
+            }
+
+            if ($date->year == 2026 && $date->between('2026-02-05', '2026-03-10')) {
+                $isVimtoSeason = true;
+            }
+
+            if ($isVimtoSeason) {
+                return rand(40, 100);
+            }
+
+            return rand(0, 3);
         }
 
         if (str_contains($product->name, 'حليب')) {
@@ -65,6 +81,5 @@ class SaleSeeder extends Seeder
         }
 
         return $baseQuantity;
-
     }
 }
