@@ -22,6 +22,7 @@ Route::middleware(['auth:sanctum','HasActiveShop'])->group(function () {
     Route::post('import-sales',[ExcelController::class, 'importSales']);
 
     Route::resource('sales', SaleController::class);
+    Route::delete('sales/delete-all', [SaleController::class, 'destroyAll']);
 
     // Products
     Route::resource('products', ProductController::class);
