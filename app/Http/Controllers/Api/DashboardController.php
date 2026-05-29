@@ -44,7 +44,7 @@ class DashboardController extends Controller
             // 3. Send multipart request to the new /dashboard FastAPI endpoint
             $response = Http::timeout(120)
                 ->attach('file', $csvContent, 'all_sales_data.csv')
-                ->post('http://127.0.0.1:8001/dashboard');
+                ->post('https://mawsemaissad.onrender.com/dashboard');
 
             if ($response->successful()) {
                 $res = $response->json();

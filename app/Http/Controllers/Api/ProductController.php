@@ -103,7 +103,7 @@ class ProductController extends Controller
             // 2. إرسال الطلب إلى بايثون كـ Multipart File بدلاً من حقل نصي عادية
             $response = Http::timeout(120)
                 ->attach('file', $csvContent, 'sales_data.csv') // إرسال الملف في الذاكرة باسم 'file'
-                ->post('http://127.0.0.1:8001/forecast', [
+                ->post('https://mawsemaissad.onrender.com/forecast', [
                     'predictionTime' => 360 // المتغيرات الأخرى ترسل كـ Form Data
                 ]);
 
