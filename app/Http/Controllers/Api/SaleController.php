@@ -14,7 +14,9 @@ class SaleController extends Controller
      */
     public function index()
     {
-        return SaleResource::collection(auth()->user()->shop->sales);
+        $perPage = request()->get('per_page', 15);
+        $sales = auth()->user()->shop->sales()->paginate($perPage);
+        return SaleResource::collection($sales);
     }
 
     /**
